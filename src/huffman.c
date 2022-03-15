@@ -6,18 +6,17 @@
 #include <stdio.h>
 #include <malloc.h>
 
-void generateOccurrences(char *path) {
+struct char_node * generateOccurrences(char *path) {
     FILE *fp;
     fp = fopen(path, "r");
-    int character;
 
     struct char_node *first_node;
     struct char_node *last_node;
     last_node = NULL;
 
+    int character;
     while (!feof(fp)) {
         character = fgetc(fp);
-
 
         if (last_node == NULL) {
             // Create previous node if not exists
@@ -51,18 +50,26 @@ void generateOccurrences(char *path) {
         printf("%c", character);
     }
     fclose(fp);
+    return first_node;
 }
 
-struct char_node *getCharNodeByCharacter(struct char_node *first_node, int character) {
+struct char_node * getCharNodeByCharacter(struct char_node *first_node, int character) {
     struct char_node *current_node = first_node;
 
     while (current_node->next != NULL) {
-        if (first_node->character == character) {
+        if (current_node->character == character) {
             return current_node;
         }
         current_node = current_node->next;
     }
 
-    printf("Le char %c n'a pas été trouvé\n", character);
     return NULL;
+}
+
+void printOccurrenceList(struct char_node *first_node) {
+    struct char_node *current_node = first_node;
+    while (current_node->next != NULL) {
+        printf("%c %i\n", current_node->character, current_node->occurrences);
+        current_node = current_node->next;
+    }
 }

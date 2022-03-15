@@ -12,7 +12,8 @@ struct char_node {
 };
 
 
-void generateOccurrences(char *path);
-struct char_node *getCharNodeByCharacter(struct char_node *first_node, int character);
+struct char_node * generateOccurrences(char *path);
+struct char_node * getCharNodeByCharacter(struct char_node *first_node, int character);
+void printOccurrenceList(struct char_node *first_node);
 
 #endif //CODAGE_HUFFMAN_HUFFMAN_H
