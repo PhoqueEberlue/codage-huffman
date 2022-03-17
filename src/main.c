@@ -3,7 +3,8 @@
 #include "huffman.h"
 
 int main() {
+   // Generating occurrence list
     struct char_list *char_list = generateOccurrences("../textes/textesimple.txt");
-    printCharList(char_list);
+    printOccurrenceList(char_list);
     return 0;
 }
