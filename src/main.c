@@ -2,7 +2,8 @@
 #include "huffman.h"
 
 int main() {
-    struct char_node *first_node = generateOccurrences("../textes/textesimple.txt");
-    printOccurrenceList(first_node);
+    // Generating occurrence list
+    struct char_list *char_list = generateOccurrences("../textes/textesimple.txt");
+    printOccurrenceList(char_list);
     return 0;
 }
