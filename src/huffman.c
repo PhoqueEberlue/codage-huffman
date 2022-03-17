@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <malloc.h>
 
-struct char_node * generateOccurrences(char *path) {
+struct char_list * generateOccurrences(char *path) {
     FILE *fp;
     fp = fopen(path, "r");
 
@@ -47,10 +47,15 @@ struct char_node * generateOccurrences(char *path) {
             }
         }
 
-        printf("%c", character);
+
     }
     fclose(fp);
-    return first_node;
+
+    struct char_list *char_list = malloc(sizeof (struct char_list));
+    char_list->first_node = first_node;
+    char_list->last_node = last_node;
+
+    return char_list;
 }
 
 struct char_node * getCharNodeByCharacter(struct char_node *first_node, int character) {
@@ -66,10 +71,22 @@ struct char_node * getCharNodeByCharacter(struct char_node *first_node, int char
     return NULL;
 }
 
-void printOccurrenceList(struct char_node *first_node) {
-    struct char_node *current_node = first_node;
+void printCharList(struct char_list *char_list) {
+    struct char_node *current_node = char_list->first_node;
     while (current_node->next != NULL) {
         printf("%c %i\n", current_node->character, current_node->occurrences);
         current_node = current_node->next;
     }
+}
+
+void sortCharList(struct char_list *char_list) {
+
+}
+
+void sortCharListByOcc(struct char_node *first_node) {
+
+}
+
+void sortCharListByASCIICode(struct char_node *first_node) {
+
 }

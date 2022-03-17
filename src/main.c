@@ -1,8 +1,9 @@
 
+#include <malloc.h>
 #include "huffman.h"
 
 int main() {
-    struct char_node *first_node = generateOccurrences("../textes/textesimple.txt");
-    printOccurrenceList(first_node);
+    struct char_list *char_list = generateOccurrences("../textes/textesimple.txt");
+    printCharList(char_list);
     return 0;
 }
