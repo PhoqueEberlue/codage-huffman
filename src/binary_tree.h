@@ -2,7 +2,7 @@
 // Created by andrewmhdb on 17/03/2022.
 //
 
-#include "huffman.h"
+#include "occurrence.h"
 
 #ifndef CODAGE_HUFFMAN_BINARY_TREE_H
 #define CODAGE_HUFFMAN_BINARY_TREE_H

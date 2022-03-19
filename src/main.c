@@ -2,11 +2,12 @@
 #include <malloc.h>
 #include "binary_tree.h"
 #include "huffman.h"
+#include "occurrence.h"
 
 int main() {
     // Generating occurrences list
 
-    struct char_list *char_list = generateOccurrences("../textes/alice.txt");
+    struct char_list *char_list = generateOccurrences("../textes/textesimple.txt");
     //printOccurrenceList(char_list);
 
     sortCharListByOcc(char_list);
