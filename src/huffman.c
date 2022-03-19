@@ -35,10 +35,10 @@ struct char_list *generateOccurrences(char *path) {
             new_node->occurrences = 1;
             res->node_list[index] = *new_node;
 
-            ++index;
             res->last_index = index;
+            ++index;
         } else {
-            // Increment character occurrence if character already have a node
+            // Increment character occurrences if character already have a node
             node->occurrences++;
         }
     }
@@ -54,7 +54,8 @@ struct char_node *getCharNodeByCharacter(struct char_list *char_list, int charac
      */
     struct char_node *current_node;
 
-    for (int i = 0; i < char_list->last_index; ++i) {
+    // last index + 1 because the index get updated after in generateOccurrences
+    for (int i = 0; i < char_list->last_index + 1; ++i) {
 
         current_node = &char_list->node_list[i];
         if (current_node->character == character) {
@@ -107,7 +108,7 @@ void sortCharListByOcc(struct char_list *char_list) {
 
 
 void sortCharListByASCIICode(struct char_list *char_list) {
-/*
+    /*
      * Simple implementation of bubble sort
      */
     bool has_changed = true;
@@ -120,8 +121,10 @@ void sortCharListByASCIICode(struct char_list *char_list) {
         // iterate the list
         for (int i = 0; i < char_list->last_index - 1; ++i) {
 
-            // if i < i + 1, swap two values
-            if (node_list[i].character > node_list[i + 1].character && node_list[i].occurrences == node_list[i+1].occurrences) {
+            // if char > char + 1 and occ == occ + 1, swap two values
+            if (node_list[i].character > node_list[i + 1].character &&
+                node_list[i].occurrences == node_list[i + 1].occurrences) {
+
                 struct char_node tmp = node_list[i];
                 node_list[i] = node_list[i + 1];
                 node_list[i + 1] = tmp;
