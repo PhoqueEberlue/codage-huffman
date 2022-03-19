@@ -2,10 +2,10 @@
 // Created by andrewmhdb on 17/03/2022.
 //
 
-#include "occurrence.h"
-
 #ifndef CODAGE_HUFFMAN_BINARY_TREE_H
 #define CODAGE_HUFFMAN_BINARY_TREE_H
+
+#include "occurrence.h"
 
 struct tree_node_list {
     struct tree_node *node_list;
@@ -29,6 +29,6 @@ void printTree2(struct tree_node *root, int space);
 
 void getDepth(int *res, struct tree_node *root, int depth);
 
-void generateCode(struct char_list *char_list, struct tree_node *root, char *code, int depth);
+void generateCodes(struct char_list *char_list, struct tree_node *root, char *code, int depth);
 
 #endif //CODAGE_HUFFMAN_BINARY_TREE_H

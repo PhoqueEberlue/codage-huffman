@@ -71,16 +71,34 @@ void printOccurrenceList(struct char_list *char_list) {
     /*
      * Prints the occurrences list
      */
+    printf("Character | Character ASCII code | occurrences in the text");
+
     for (int i = 0; i < char_list->last_index; ++i) {
         struct char_node *current = &char_list->node_list[i];
-        printf("%c %i %i ", current->character, current->character, current->occurrences);
 
-        if (current->code != NULL) {
-            for (int j = 0; j < current->code_size; ++j) {
-                printf("%i", current->code[j]);
+        if (i == 0) {
+            if (current->code != NULL) {
+                printf(" | huffman code");
             }
             printf("\n");
         }
+
+        if (current->character < 100) {
+            printf("    %c     |          %i          |           %i             ", current->character,
+                   current->character, current->occurrences);
+        } else {
+            printf("    %c     |          %i         |           %i             ", current->character,
+                   current->character, current->occurrences);
+        }
+
+        if (current->code != NULL) {
+            printf("|     ");
+            for (int j = 0; j < current->code_size; ++j) {
+                printf("%i", current->code[j]);
+            }
+        }
+
+        printf("\n");
     }
 }
 

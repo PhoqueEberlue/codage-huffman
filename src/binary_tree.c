@@ -5,7 +5,7 @@
 #include <malloc.h>
 #include <stdbool.h>
 #include "binary_tree.h"
-#include "occurrence.h"
+#include "huffman.h"
 
 struct tree_node_list *createLeaves(struct char_list *char_list) {
     /*
@@ -55,7 +55,6 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
     int index = tree_node_list->size - 1;
     int processed_node_count = 0;
 
-    printf("%i\n", index);
     struct tree_node *node_list = tree_node_list->node_list;
     // TODO: find a way to compute the exact size we need for the array
     struct tree_node *node_list_processed = malloc(255 * sizeof(struct tree_node));
@@ -74,10 +73,14 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
         new_node->occurrences = new_node->left->occurrences + new_node->right->occurrences;
         new_node->character = -1;
 
+#ifdef PRINT_MODE
+        if (index == tree_node_list->size - 1) {
+            printf("Queue state: (red nodes are the non-character nodes\n");
+        }
 
         for (int i = 0; i < index; ++i) {
             if (node_list[i].character == -1) {
-                printf("\033[0;31m %c %i|", node_list[i].character, node_list[i].occurrences);
+                printf("\033[0;31m   %i|", node_list[i].occurrences);
             }
             else {
                 printf("\033[0;37m %c %i|", node_list[i].character, node_list[i].occurrences);
@@ -85,12 +88,18 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
         }
 
         printf("\033[0;37m\n");
+#endif
         addNewNode(tree_node_list, new_node, index);
 
         processed_node_count = processed_node_count + 2;
         index = index - 1;
     }
+
+#ifdef PRINT_MODE
     printf("%c %i|\n", node_list[0].character, node_list[0].occurrences);
+    printf("\n");
+#endif
+
     return &node_list[0];
 }
 
@@ -141,7 +150,7 @@ void getDepth(int *res, struct tree_node *root, int depth) {
     }
 }
 
-void generateCode(struct char_list *char_list, struct tree_node *root, char *code, int depth) {
+void generateCodes(struct char_list *char_list, struct tree_node *root, char *code, int depth) {
     /*
      * Generate binary code for each character
      */
@@ -151,7 +160,7 @@ void generateCode(struct char_list *char_list, struct tree_node *root, char *cod
         // left child = bit 0
         code[depth] = 0;
         ++depth;
-        generateCode(char_list, root->left, code, depth);
+        generateCodes(char_list, root->left, code, depth);
         --depth;
         is_leaf = false;
     }
@@ -161,7 +170,7 @@ void generateCode(struct char_list *char_list, struct tree_node *root, char *cod
         // right child = bit 1
         code[depth] = 1;
         ++depth;
-        generateCode(char_list, root->right, code, depth);
+        generateCodes(char_list, root->right, code, depth);
         --depth;
         is_leaf = false;
     }
