@@ -33,6 +33,7 @@ struct char_list *generateOccurrences(char *path) {
             new_node = malloc(sizeof(struct char_node));
             new_node->character = character;
             new_node->occurrences = 1;
+            new_node->code = NULL;
             res->node_list[index] = *new_node;
 
             res->last_index = index;
@@ -71,8 +72,15 @@ void printOccurrenceList(struct char_list *char_list) {
      * Prints the occurrences list
      */
     for (int i = 0; i < char_list->last_index; ++i) {
-        struct char_node current = char_list->node_list[i];
-        printf("%c %i %i\n", current.character, current.character, current.occurrences);
+        struct char_node *current = &char_list->node_list[i];
+        printf("%c %i %i ", current->character, current->character, current->occurrences);
+
+        if (current->code != NULL) {
+            for (int j = 0; j < current->code_size; ++j) {
+                printf("%i", current->code[j]);
+            }
+            printf("\n");
+        }
     }
 }
 

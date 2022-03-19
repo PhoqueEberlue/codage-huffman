@@ -16,6 +16,8 @@ struct char_list {
 struct char_node {
     int character;
     int occurrences;
+    char *code;
+    int code_size;
 };
 
 
