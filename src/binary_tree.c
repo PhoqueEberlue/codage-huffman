@@ -75,7 +75,7 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
 
 #ifdef PRINT_MODE
         if (index == tree_node_list->size - 1) {
-            printf("Queue state: (red nodes are the non-character nodes\n");
+            printf("Queue state: (red nodes are the non-character nodes)\n");
         }
 
         for (int i = 0; i < index; ++i) {
@@ -96,7 +96,7 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
     }
 
 #ifdef PRINT_MODE
-    printf("%c %i|\n", node_list[0].character, node_list[0].occurrences);
+    printf(" %i|\n", node_list[0].occurrences);
     printf("\n");
 #endif
 

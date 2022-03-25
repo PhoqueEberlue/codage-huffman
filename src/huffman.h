@@ -15,11 +15,12 @@ struct huffman_data {
     struct char_list *char_list;
     struct tree_node *root;
     int *depth;
+    char *file_path;
 };
 
 struct huffman_data *applyHuffmanOnFile(char *file_path);
 
-
+void generateFile(struct huffman_data *huffman_data, char *file_path);
 
 
 
