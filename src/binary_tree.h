@@ -31,4 +31,8 @@ void getDepth(int *res, struct tree_node *root, int depth);
 
 void generateCodes(struct char_list *char_list, struct tree_node *root, char *code, int depth);
 
+float getMeanCodeSize(struct char_list *char_list);
+
+void freeTree(struct tree_node *root);
+
 #endif //CODAGE_HUFFMAN_BINARY_TREE_H

@@ -64,7 +64,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     struct huffman_data *huffman_data = malloc(sizeof(struct huffman_data));
     huffman_data->char_list = char_list;
     huffman_data->root = root;
-    huffman_data->depth = depth;
+    huffman_data->depth = *depth;
     huffman_data->file_path = file_path;
 
     return huffman_data;
@@ -80,36 +80,64 @@ void generateFile(struct huffman_data *huffman_data, char *file_path) {
 
     int character;
     short num_bit = 0;
+    unsigned long byte_count = 0;
+    unsigned long byte_count_base_file = 0;
     unsigned long number;
 
     while (!feof(base_file)) {
+        byte_count_base_file++;
         character = fgetc(base_file);
         struct char_node *node = getCharNodeByCharacter(huffman_data->char_list, character);
 
-        printf("%c: ", node->character);
-
+// #ifdef PRINT_MODE
+//        printf("%c: ", node->character);
+// #endif
         for (int i = 0; i < node->code_size; ++i) {
-            printf("%i", node->code[i]);
+// #ifdef PRINT_MODE
+//            printf("%i", node->code[i]);
+// #endif
             number ^= (-node->code[i] ^ number) & (1UL << num_bit);
 
             if (num_bit == 7) {
+                byte_count++;
                 fwrite(&number, 1, 1, res_file);
                 num_bit = 0;
             } else {
                 ++num_bit;
             }
         }
-        printf("\n");
+// #ifdef PRINT_MODE
+//        printf("\n");
+// #endif
     }
     if (num_bit != 0) {
         for (int i = num_bit; i < 8; ++i) {
             // https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
             number ^= (-0 ^ number) & (1UL << num_bit);
         }
+        fwrite(&number, 1, 1, res_file);
     }
-    fwrite(&number, 1, 1, res_file);
 
     fclose(base_file);
     fclose(res_file);
+
+    huffman_data->byte_count = byte_count;
+    huffman_data->byte_count_base_file = byte_count_base_file;
+}
+
+void printHuffmanData(struct huffman_data *huffman_data) {
+    printf("Huffman data of the file: %s\n", huffman_data->file_path);
+    printf("Depth of the tree: %i\n", huffman_data->depth);
+    printf("Nb bytes of the new file: %lu\n", huffman_data->byte_count);
+    printf("Nb of the base file: %lu\n", huffman_data->byte_count_base_file);
+    printf("Compression ratio: %Lf\n",
+           1 - ((long double) huffman_data->byte_count / huffman_data->byte_count_base_file));
+    printf("Mean code size: %f\n", getMeanCodeSize(huffman_data->char_list));
+}
+
+void freeHuffman(struct huffman_data *huffman_data) {
+    freeCharList(huffman_data->char_list);
+    freeTree(huffman_data->root);
+    // TODO: FREE FILENAME
 
 }

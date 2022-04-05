@@ -159,3 +159,13 @@ void sortCharListByASCIICode(struct char_list *char_list) {
         }
     }
 }
+
+void freeCharNode(struct char_node *char_node) {
+    free(char_node->code);
+    free(char_node);
+}
+
+void freeCharList(struct char_list *char_list) {
+    freeCharNode(char_list->node_list);
+    free(char_list);
+}

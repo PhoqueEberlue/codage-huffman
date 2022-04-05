@@ -33,4 +33,6 @@ void sortCharListByOcc(struct char_list *char_list);
 
 void sortCharListByASCIICode(struct char_list *char_list);
 
+void freeCharList(struct char_list *char_list);
+
 #endif //CODAGE_HUFFMAN_OCCURRENCE_H
