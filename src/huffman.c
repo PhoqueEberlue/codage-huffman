@@ -6,6 +6,10 @@
 #include "huffman.h"
 
 struct huffman_data *applyHuffmanOnFile(char *file_path) {
+    /*
+     * Call every function to compute the huffman codes
+     */
+
     // Generating occurrences list
     struct char_list *char_list = generateOccurrences(file_path);
 
@@ -14,6 +18,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     printf("\n");
 #endif
 
+    // Sorting by character occurrence
     sortCharListByOcc(char_list);
 
 #ifdef PRINT_MODE
@@ -22,6 +27,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     printf("\n");
 #endif
 
+    // Sorting by ASCII code
     sortCharListByASCIICode(char_list);
 
 #ifdef PRINT_MODE
@@ -30,8 +36,11 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     printf("\n");
 #endif
 
+
+    // Creating leaves
     struct tree_node_list *tree_node_list = createLeaves(char_list);
 
+    // Creating tree
     struct tree_node *root = createTree(tree_node_list);
 
 #ifdef PRINT_MODE
@@ -43,6 +52,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     int *depth = malloc(sizeof(int));
     *depth = 0;
 
+    // Get the Depth
     getDepth(depth, root, 0);
 
 #ifdef PRINT_MODE
@@ -61,6 +71,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     printf("\n");
 #endif
 
+    // Creating huffman data struct
     struct huffman_data *huffman_data = malloc(sizeof(struct huffman_data));
     huffman_data->char_list = char_list;
     huffman_data->root = root;
@@ -72,6 +83,9 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
 
 
 void generateFile(struct huffman_data *huffman_data, char *file_path) {
+    /*
+     * Generate compressed file
+     */
     FILE *base_file;
     base_file = fopen(huffman_data->file_path, "r");
 
@@ -84,6 +98,7 @@ void generateFile(struct huffman_data *huffman_data, char *file_path) {
     unsigned long byte_count_base_file = 0;
     unsigned long number;
 
+    // For each char in file
     while (!feof(base_file)) {
         byte_count_base_file++;
         character = fgetc(base_file);
@@ -110,6 +125,8 @@ void generateFile(struct huffman_data *huffman_data, char *file_path) {
 //        printf("\n");
 // #endif
     }
+
+    // treat the last remaining bits
     if (num_bit != 0) {
         for (int i = num_bit; i < 8; ++i) {
             // https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
@@ -126,6 +143,9 @@ void generateFile(struct huffman_data *huffman_data, char *file_path) {
 }
 
 void printHuffmanData(struct huffman_data *huffman_data) {
+    /*
+     * Print huffman related data
+     */
     printf("Huffman data of the file: %s\n", huffman_data->file_path);
     printf("Depth of the tree: %i\n", huffman_data->depth);
     printf("Nb bytes of the new file: %lu\n", huffman_data->byte_count);
@@ -136,8 +156,11 @@ void printHuffmanData(struct huffman_data *huffman_data) {
 }
 
 void freeHuffman(struct huffman_data *huffman_data) {
+    /*
+     * Free variables used by huffman
+     */
     freeCharList(huffman_data->char_list);
     freeTree(huffman_data->root);
-    // TODO: FREE FILENAME
-
+    // free(huffman_data->file_path);
+    free(huffman_data);
 }

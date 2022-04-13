@@ -192,6 +192,9 @@ void generateCodes(struct char_list *char_list, struct tree_node *root, char *co
 }
 
 float getMeanCodeSize(struct char_list *char_list) {
+    /*
+     * Gets the mean size of the codes
+     */
     int sum_code_sizes = 0;
 
     for (int i = 0; i < char_list->last_index; ++i) {
@@ -201,6 +204,9 @@ float getMeanCodeSize(struct char_list *char_list) {
 }
 
 void freeTree(struct tree_node *root) {
+    /*
+     * Free recursively every node of a given tree
+     */
     if (root->character != -1) {
         freeTree(root->left);
         freeTree(root->right);

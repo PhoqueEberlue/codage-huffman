@@ -11,6 +11,7 @@
 #include "binary_tree.h"
 #include "occurrence.h"
 
+// Struct used to store all data related to huffman
 struct huffman_data {
     struct char_list *char_list;
     struct tree_node *root;
