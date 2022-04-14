@@ -29,12 +29,9 @@ struct char_list *generateOccurrences(char *path) {
 
         if (node == NULL) {
             // Create node if character has no node
-            struct char_node *new_node;
-            new_node = malloc(sizeof(struct char_node));
-            new_node->character = character;
-            new_node->occurrences = 1;
-            new_node->code = NULL;
-            res->node_list[index] = *new_node;
+            res->node_list[index].character = character;
+            res->node_list[index].occurrences = 1;
+            res->node_list[index].code = NULL;
 
             res->last_index = index;
             ++index;
