@@ -166,21 +166,13 @@ void getDepth(int *res, struct tree_node *root, int depth) {
     /*
      * update the value `res` to get the maximum depth of the tree
      */
-    bool is_leaf = true;
-    // if left child exists
-    if (root->left != NULL) {
+    // if the current node is a no char node
+    if (root->character == -1) {
         getDepth(res, root->left, depth + 1);
-        is_leaf = false;
-    }
-
-    // if right child exists
-    if (root->right != NULL) {
         getDepth(res, root->right, depth + 1);
-        is_leaf = false;
     }
-
     // if current node is a leaf and the max depth is < to the current depth
-    if (is_leaf && *res < depth) {
+    else if (*res < depth) {
         *res = depth;
     }
 }
@@ -189,29 +181,18 @@ void generateCodes(struct char_list *char_list, struct tree_node *root, char *co
     /*
      * Generate binary code for each character
      */
-    bool is_leaf = true;
-    // if left child exists
-    if (root->left != NULL) {
-        // left child = bit 0
+    // if the current node is a no char node
+    if (root->character == -1) {
         code[depth] = 0;
         ++depth;
         generateCodes(char_list, root->left, code, depth);
         --depth;
-        is_leaf = false;
-    }
 
-    // if right child exists
-    if (root->right != NULL) {
-        // right child = bit 1
         code[depth] = 1;
         ++depth;
         generateCodes(char_list, root->right, code, depth);
         --depth;
-        is_leaf = false;
-    }
-
-    // if current node is a leaf
-    if (is_leaf) {
+    } else {
         // gets the corresponding char_node
         struct char_node *node = getCharNodeByCharacter(char_list, root->character);
         node->code = malloc(depth * sizeof(char));
