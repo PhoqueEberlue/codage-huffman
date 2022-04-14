@@ -14,6 +14,8 @@
 // Struct used to store all data related to huffman
 struct huffman_data {
     struct char_list *char_list;
+    struct tree_node_list *tree_node_list;
+    struct tree_node *no_char_node_list;
     struct tree_node *root;
     int depth;
     unsigned long byte_count;

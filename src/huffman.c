@@ -41,7 +41,8 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     struct tree_node_list *tree_node_list = createLeaves(char_list);
 
     // Creating tree
-    struct tree_node *root = createTree(tree_node_list);
+    struct tree_node *no_char_node_list = createTree(tree_node_list);
+    struct tree_node *root = &no_char_node_list[0];
 
 #ifdef PRINT_MODE
     printf("Representation of the tree (left to right)\n");
@@ -74,6 +75,8 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     // Creating huffman data struct
     struct huffman_data *huffman_data = malloc(sizeof(struct huffman_data));
     huffman_data->char_list = char_list;
+    huffman_data->tree_node_list = tree_node_list;
+    huffman_data->no_char_node_list = no_char_node_list;
     huffman_data->root = root;
     huffman_data->depth = *depth;
     huffman_data->file_path = file_path;
@@ -161,6 +164,9 @@ void freeHuffman(struct huffman_data *huffman_data) {
      */
     freeCharList(huffman_data->char_list);
     freeTree(huffman_data->root);
+    // free(huffman_data->no_char_node_list);
+    free(huffman_data->tree_node_list->node_list);
+    free(huffman_data->tree_node_list);
     // free(huffman_data->file_path);
     free(huffman_data);
 }

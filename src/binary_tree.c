@@ -133,7 +133,7 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
     printListsStates(no_char_node_list, tree_node_list, index_leaves, index_nodes_r, index_nodes_w);
 #endif
 
-    return &no_char_node_list[0];
+    return no_char_node_list;
 }
 
 void printTree(struct tree_node *root) {
