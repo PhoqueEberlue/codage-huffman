@@ -11,17 +11,19 @@ struct tree_node_list *createLeaves(struct char_list *char_list) {
     /*
      * Create leaves (tree_node with no children) from a char_list
      */
+
+    // creates the list data structure
     struct tree_node_list *tree_list = malloc(sizeof(struct tree_node_list));
+
+    // creates the list itself
     tree_list->node_list = malloc(char_list->last_index * sizeof(struct tree_node));
     tree_list->size = char_list->last_index;
 
     for (int i = 0; i < char_list->last_index; ++i) {
-        struct tree_node *new_node = malloc(sizeof(struct tree_node));
-        new_node->character = char_list->node_list[i].character;
-        new_node->occurrences = char_list->node_list[i].occurrences;
-        new_node->left = NULL;
-        new_node->right = NULL;
-        tree_list->node_list[i] = *new_node;
+        tree_list->node_list[i].character = char_list->node_list[i].character;
+        tree_list->node_list[i].occurrences = char_list->node_list[i].occurrences;
+        tree_list->node_list[i].left = NULL;
+        tree_list->node_list[i].right = NULL;
     }
 
     return tree_list;
@@ -56,17 +58,20 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
     int processed_node_count = 0;
 
     struct tree_node *node_list = tree_node_list->node_list;
-    // TODO: find a way to compute the exact size we need for the array
-    struct tree_node *node_list_processed = malloc(255 * sizeof(struct tree_node));
+    // Creates a new table to store nodes as we will delete them from node list
+    // The total number of nodes in the tree is always: Nb leaf * 2 - 1
+    struct tree_node *node_list_processed = malloc((tree_node_list->size * 2 - 1) * sizeof(struct tree_node));
 
     while (index != 0) {
+        // Gets the two last node of the list
         struct tree_node *left = &node_list[index];
         struct tree_node *right = &node_list[index - 1];
 
         node_list_processed[processed_node_count] = *left;
         node_list_processed[processed_node_count + 1] = *right;
 
-        struct tree_node *new_node = malloc(sizeof(struct tree_node));
+        struct tree_node *new_node = &node_list_processed[processed_node_count + 2];
+
         new_node->left = &node_list_processed[processed_node_count];
         new_node->right = &node_list_processed[processed_node_count + 1];
 
@@ -81,8 +86,7 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
         for (int i = 0; i < index; ++i) {
             if (node_list[i].character == -1) {
                 printf("\033[0;31m   %i|", node_list[i].occurrences);
-            }
-            else {
+            } else {
                 printf("\033[0;37m %c %i|", node_list[i].character, node_list[i].occurrences);
             }
         }
@@ -113,7 +117,7 @@ void printTree(struct tree_node *root) {
 }
 
 
-void printTree2(struct tree_node *root, int space){
+void printTree2(struct tree_node *root, int space) {
     /*
      * Clean print of a tree
      */
