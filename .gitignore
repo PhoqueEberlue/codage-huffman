@@ -58,4 +58,5 @@ cmake-build-debug
 .idea
 
 # Txt folder
-textes/
+textes/*_freq.txt
+textes/*_comp.bin
