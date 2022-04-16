@@ -104,9 +104,10 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
      */
     char *freq_ext = "_freq.txt";
     char *comp_ext = "_comp.bin";
-    char *file_path_freq;
 
+    char *file_path_freq;
     strncpy(file_path_freq, file_path, strlen(file_path) - 4);
+    file_path_freq[strlen(file_path) - 4] = '\0';
     strcat(file_path_freq, freq_ext);
 
     generateFreqFile(huffman_data, file_path_freq);
@@ -115,6 +116,7 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
 
     char *file_path_comp;
     strncpy(file_path_comp, file_path, strlen(file_path) - 4);
+    file_path_comp[strlen(file_path) - 4] = '\0';
     strcat(file_path_comp, comp_ext);
 
     FILE *res_file;
