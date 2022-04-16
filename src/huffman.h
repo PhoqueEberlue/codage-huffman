@@ -25,10 +25,14 @@ struct huffman_data {
 
 struct huffman_data *applyHuffmanOnFile(char *file_path);
 
-void generateFile(struct huffman_data *huffman_data, char *file_path);
+void generateFreqFile(struct huffman_data *huffman_data, char *file_path);
+
+void generateCompressedFile(struct huffman_data *huffman_data, char *file_path);
 
 void printHuffmanData(struct huffman_data *huffman_data);
 
 void freeHuffman(struct huffman_data *huffman_data);
+
+struct huffman_data *mainHuffman(char *file_path);
 
 #endif //CODAGE_HUFFMAN_HUFFMAN_H

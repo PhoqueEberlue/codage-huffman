@@ -56,3 +56,6 @@ cmake-build-debug
 
 # Idea
 .idea
+
+# Txt folder
+textes/

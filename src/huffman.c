@@ -3,6 +3,7 @@
 //
 
 #include <malloc.h>
+#include <string.h>
 #include "huffman.h"
 
 struct huffman_data *applyHuffmanOnFile(char *file_path) {
@@ -84,16 +85,40 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     return huffman_data;
 }
 
+void generateFreqFile(struct huffman_data *huffman_data, char *file_path) {
+    FILE *res_file = fopen(file_path, "w");
+    fprintf(res_file, "%i", huffman_data->root->occurrences);
 
-void generateFile(struct huffman_data *huffman_data, char *file_path) {
+    for (int i = 0; i < huffman_data->char_list->last_index; ++i) {
+        fwrite("\n", 1, 1, res_file);
+        fwrite(&huffman_data->char_list->node_list[i].character, 1, 1, res_file);
+        fwrite(" ", 1, 1, res_file);
+        fprintf(res_file, "%i", huffman_data->char_list->node_list[i].occurrences);
+    }
+    fclose(res_file);
+}
+
+void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) {
     /*
      * Generate compressed file
      */
+    char *freq_ext = "_freq.txt";
+    char *comp_ext = "_comp.bin";
+    char *file_path_freq;
+
+    strncpy(file_path_freq, file_path, strlen(file_path) - 4);
+    strcat(file_path_freq, freq_ext);
+
+    generateFreqFile(huffman_data, file_path_freq);
     FILE *base_file;
     base_file = fopen(huffman_data->file_path, "r");
 
+    char *file_path_comp;
+    strncpy(file_path_comp, file_path, strlen(file_path) - 4);
+    strcat(file_path_comp, comp_ext);
+
     FILE *res_file;
-    res_file = fopen(file_path, "wb");
+    res_file = fopen(file_path_comp, "wb");
 
     int character;
     short num_bit = 0;
@@ -162,11 +187,18 @@ void freeHuffman(struct huffman_data *huffman_data) {
     /*
      * Free variables used by huffman
      */
-    freeCharList(huffman_data->char_list);
-    freeTree(huffman_data->root);
+    // freeCharList(huffman_data->char_list);
+    // freeTree(huffman_data->root);
     // free(huffman_data->no_char_node_list);
-    free(huffman_data->tree_node_list->node_list);
+    // free(huffman_data->tree_node_list->node_list);
     free(huffman_data->tree_node_list);
     // free(huffman_data->file_path);
     free(huffman_data);
+}
+
+struct huffman_data *mainHuffman(char *file_path) {
+    struct huffman_data *huffman_data = applyHuffmanOnFile(file_path);
+    generateCompressedFile(huffman_data, file_path);
+    printHuffmanData(huffman_data);
+    freeHuffman(huffman_data);
 }

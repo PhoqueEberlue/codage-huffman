@@ -1,9 +1,8 @@
 #include "huffman.h"
 
-int main() {
-    struct huffman_data *huffman_data = applyHuffmanOnFile("../textes/alice.txt");
-    generateFile(huffman_data, "../textes/alice.bin");
-    printHuffmanData(huffman_data);
-    freeHuffman(huffman_data);
+int main(int argc, char *argv[]) {
+    if (argc == 2) {
+        mainHuffman(argv[1]);
+    }
     return 0;
 }
