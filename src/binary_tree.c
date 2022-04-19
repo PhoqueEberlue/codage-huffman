@@ -29,111 +29,82 @@ struct tree_node_list *createLeaves(struct char_list *char_list) {
     return tree_list;
 }
 
-void printListsStates(struct tree_node *no_char_node_list, struct tree_node_list *tree_node_list,
-                      int index_leaves, int index_nodes_r, int index_nodes_w) {
-    printf("-----------------------------------------------------------\n");
+void addNewNode(struct tree_node_list *tree_node_list, struct tree_node *new_node, int node_remaining) {
+    /*
+     * Add a new node created by `createLeaves` into the tree_node_list
+     */
+    // TODO: shift the list up to the index in createTree to avoid shifting nodes that have already been processed
+    int index_to_insert;
     for (int i = 0; i < tree_node_list->size; ++i) {
-        if (i == index_leaves) {
-            printf("\033[0;31m");
-        } else if (i > index_leaves) {
-            printf("\033[0;32m");
-        } else {
-            printf("\033[0;37m");
+        if (tree_node_list->node_list[i].occurrences <= new_node->occurrences) {
+            index_to_insert = i;
+            break;
         }
-        printf("%c %i|", tree_node_list->node_list[i].character, tree_node_list->node_list[i].occurrences);
     }
-    printf("\033[0;37m\n");
-    printf("    ");
-    for (int i = 0; i < tree_node_list->size - 1; ++i) {
-        if (i == index_nodes_r) {
-            printf("\033[0;31m");
-        } else if (i == index_nodes_w) {
-            printf("\033[0;35m");
-        } else if (i > index_nodes_r) {
-            printf("\033[0;32m");
-        } else {
-            printf("\033[0;37m");
-        }
-        printf("  %i|", no_char_node_list[i].occurrences);
+
+    // shifts the list before adding the new node
+    for (int i = node_remaining - 1; i >= index_to_insert; --i) {
+        tree_node_list->node_list[i + 1] = tree_node_list->node_list[i];
     }
-    printf("\033[0;37m\n");
+
+    tree_node_list->node_list[index_to_insert] = *new_node;
 }
 
 struct tree_node *createTree(struct tree_node_list *tree_node_list) {
     /*
      * Creates a tree from a tree_node_list
      */
+    int index = tree_node_list->size - 1;
+    int processed_node_count = 0;
 
-    // Creating the list that stores the nodes without characters.
-    // The number of nodes without character is always: Nb char node - 1
-    struct tree_node *no_char_node_list = malloc(sizeof(struct tree_node) * tree_node_list->size - 1);
-    struct tree_node *leaves_list = tree_node_list->node_list;
+    struct tree_node *node_list = tree_node_list->node_list;
+    // Creates a new table to store nodes as we will delete them from node list
+    // The total number of nodes in the tree is always: Nb leaf * 2 - 1
+    struct tree_node *node_list_processed = malloc((tree_node_list->size * 2 - 1) * sizeof(struct tree_node));
 
-    // the current index of the tree node list
-    int index_leaves = tree_node_list->size - 1;
+    while (index != 0) {
+        // Gets the two last node of the list
+        struct tree_node *left = &node_list[index];
+        struct tree_node *right = &node_list[index - 1];
 
-    // the current write index of the no char node list
-    int index_nodes_w = tree_node_list->size - 2;
-    // the current read index of the no char node list
-    int index_nodes_r = tree_node_list->size - 2;
+        node_list_processed[processed_node_count] = *left;
+        node_list_processed[processed_node_count + 1] = *right;
 
-    struct tree_node *left;
-    struct tree_node *right;
+        struct tree_node *new_node = &node_list_processed[processed_node_count + 2];
 
-    while (index_leaves != -1 || index_nodes_r != 0) {
+        new_node->left = &node_list_processed[processed_node_count];
+        new_node->right = &node_list_processed[processed_node_count + 1];
+
+        new_node->occurrences = new_node->left->occurrences + new_node->right->occurrences;
+        new_node->character = -1;
 
 #ifdef PRINT_MODE
-        printListsStates(no_char_node_list, tree_node_list, index_leaves, index_nodes_r, index_nodes_w);
-#endif
-        // if the leaves queue is empty OR if the actual leave have a greater occurrence than the next two no char node
-        if (index_leaves == -1 || (no_char_node_list[index_nodes_r].occurrences != 0 &&
-                                   no_char_node_list[index_nodes_r - 1].occurrences != 0 &&
-                                   leaves_list[index_leaves].occurrences > no_char_node_list[index_nodes_r].occurrences)
-                                  && leaves_list[index_leaves].occurrences >
-                                     no_char_node_list[index_nodes_r - 1].occurrences) {
-
-            // take the next two no char node
-            left = &no_char_node_list[index_nodes_r];
-            right = &no_char_node_list[index_nodes_r - 1];
-            index_nodes_r = index_nodes_r - 2;
+        if (index == tree_node_list->size - 1) {
+            printf("Queue state: (red nodes are the non-character nodes)\n");
         }
 
-        // if there is only one leaf remaining OR if the next no char node exists and is lesser than the actual leaf
-        else if (index_leaves == 0 || (no_char_node_list[index_nodes_r].character != 0
-                   && leaves_list[index_leaves - 1].occurrences > no_char_node_list[index_nodes_r].occurrences)) {
-
-            // take one leaf and one no char node
-            if (no_char_node_list[index_nodes_r].occurrences > leaves_list[index_leaves].occurrences) {
-                left = &leaves_list[index_leaves];
-                right = &no_char_node_list[index_nodes_r];
+        for (int i = 0; i < index; ++i) {
+            if (node_list[i].character == -1) {
+                printf("\033[0;31m   %i|", node_list[i].occurrences);
             } else {
-                right = &leaves_list[index_leaves];
-                left = &no_char_node_list[index_nodes_r];
+                printf("\033[0;37m %c %i|", node_list[i].character, node_list[i].occurrences);
             }
-            index_nodes_r--;
-            index_leaves--;
-
-        } else {
-            // Take two leaves
-            left = &leaves_list[index_leaves];
-            right = &leaves_list[index_leaves - 1];
-            index_leaves = index_leaves - 2;
         }
 
-        no_char_node_list[index_nodes_w].character = -1;
-        // sum the two nodes
-        no_char_node_list[index_nodes_w].occurrences = left->occurrences + right->occurrences;
-        // stores the pointer of the two nodes into left and right
-        no_char_node_list[index_nodes_w].left = left;
-        no_char_node_list[index_nodes_w].right = right;
-        index_nodes_w--;
+        printf("\033[0;37m\n");
+#endif
+        addNewNode(tree_node_list, new_node, index);
+
+        processed_node_count = processed_node_count + 2;
+        index = index - 1;
     }
 
 #ifdef PRINT_MODE
-    printListsStates(no_char_node_list, tree_node_list, index_leaves, index_nodes_r, index_nodes_w);
+    printf(" %i|\n", node_list[0].occurrences);
+    printf("\n");
 #endif
 
-    return no_char_node_list;
+    return &node_list[0];
 }
 
 void printTree(struct tree_node *root) {
