@@ -86,7 +86,7 @@ void generateFreqFile(struct huffman_data *huffman_data, char *file_path) {
     FILE *res_file = fopen(file_path, "w");
     fprintf(res_file, "%i", huffman_data->root->occurrences);
 
-    for (int i = 0; i < huffman_data->char_list->last_index; ++i) {
+    for (int i = 0; i <= huffman_data->char_list->last_index; ++i) {
         fwrite("\n", 1, 1, res_file);
         fwrite(&huffman_data->char_list->char_elem_p[i].character, 1, 1, res_file);
         fwrite(" ", 1, 1, res_file);
@@ -120,7 +120,7 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
     res_file = fopen(file_path_comp, "wb");
 
     int character;
-    short num_bit = 0;
+    short num_bit = 7;
     unsigned long byte_count = 0;
     unsigned long byte_count_base_file = 0;
     unsigned long number;
@@ -143,12 +143,12 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
 // #endif
             number ^= (-node->code[i] ^ number) & (1UL << num_bit);
 
-            if (num_bit == 7) {
+            if (num_bit == 0) {
                 byte_count++;
                 fwrite(&number, 1, 1, res_file);
-                num_bit = 0;
+                num_bit = 7;
             } else {
-                ++num_bit;
+                --num_bit;
             }
         }
 // #ifdef PRINT_MODE
@@ -157,8 +157,8 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
     }
 
     // treat the last remaining bits
-    if (num_bit != 0) {
-        for (int i = num_bit; i < 8; ++i) {
+    if (num_bit != 7) {
+        for (int i = num_bit; i > 0; --i) {
             // https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
             number ^= (-0 ^ number) & (1UL << num_bit);
         }
@@ -189,12 +189,11 @@ void freeHuffman(struct huffman_data *huffman_data) {
     /*
      * Free variables used by huffman
      */
-    // freeCharList(huffman_data->char_list);
+    freeCharList(huffman_data->char_list);
     // freeTree(huffman_data->root);
     // free(huffman_data->no_char_node_list);
     // free(huffman_data->tree_node_list->char_elem_p);
     free(huffman_data->tree_node_list);
-    // free(huffman_data->file_path);
     free(huffman_data);
 }
 
