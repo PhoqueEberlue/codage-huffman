@@ -60,3 +60,4 @@ cmake-build-debug
 # Txt folder
 textes/*_freq.txt
 textes/*_comp.bin
+
