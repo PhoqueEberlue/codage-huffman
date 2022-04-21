@@ -20,7 +20,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
 #endif
 
     // Sorting by character occurrence
-    sortCharListByOcc(char_list);
+    sortCharListByOcc(char_list, true);
 
 #ifdef PRINT_MODE
     printf("Sorted by occurrences\n");
@@ -29,7 +29,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
 #endif
 
     // Sorting by ASCII code
-    sortCharListByASCIICode(char_list);
+    sortCharListByASCIICode(char_list, true);
 
 #ifdef PRINT_MODE
     printf("Sorted by occurrences then ASCII code\n");
@@ -37,13 +37,11 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     printf("\n");
 #endif
 
-
     // Creating leaves
     struct tree_node_list *tree_node_list = createLeaves(char_list);
 
     // Creating tree
-    struct tree_node *no_char_node_list = createTree(tree_node_list);
-    struct tree_node *root = &no_char_node_list[0];
+    struct tree_node *root = createTree(tree_node_list);
 
 #ifdef PRINT_MODE
     printf("Representation of the tree (left to right)\n");
@@ -52,7 +50,6 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
 #endif
 
     int *depth = malloc(sizeof(int));
-    *depth = 0;
 
     // Get the Depth
     getDepth(depth, root, 0);
@@ -77,7 +74,7 @@ struct huffman_data *applyHuffmanOnFile(char *file_path) {
     struct huffman_data *huffman_data = malloc(sizeof(struct huffman_data));
     huffman_data->char_list = char_list;
     huffman_data->tree_node_list = tree_node_list;
-    huffman_data->no_char_node_list = no_char_node_list;
+    // huffman_data->no_char_node_list = no_char_node_list;
     huffman_data->root = root;
     huffman_data->depth = *depth;
     huffman_data->file_path = file_path;
@@ -91,9 +88,9 @@ void generateFreqFile(struct huffman_data *huffman_data, char *file_path) {
 
     for (int i = 0; i <= huffman_data->char_list->last_index; ++i) {
         fwrite("\n", 1, 1, res_file);
-        fwrite(&huffman_data->char_list->node_list[i].character, 1, 1, res_file);
+        fwrite(&huffman_data->char_list->char_elem_p[i].character, 1, 1, res_file);
         fwrite(" ", 1, 1, res_file);
-        fprintf(res_file, "%i", huffman_data->char_list->node_list[i].occurrences);
+        fprintf(res_file, "%i", huffman_data->char_list->char_elem_p[i].occurrences);
     }
     fclose(res_file);
 }
@@ -105,7 +102,7 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
     char *freq_ext = "_freq.txt";
     char *comp_ext = "_comp.bin";
 
-    char *file_path_freq;
+    char file_path_freq[50];
     strncpy(file_path_freq, file_path, strlen(file_path) - 4);
     file_path_freq[strlen(file_path) - 4] = '\0';
     strcat(file_path_freq, freq_ext);
@@ -114,7 +111,7 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
     FILE *base_file;
     base_file = fopen(huffman_data->file_path, "r");
 
-    char *file_path_comp;
+    char file_path_comp[50];
     strncpy(file_path_comp, file_path, strlen(file_path) - 4);
     file_path_comp[strlen(file_path) - 4] = '\0';
     strcat(file_path_comp, comp_ext);
@@ -132,7 +129,10 @@ void generateCompressedFile(struct huffman_data *huffman_data, char *file_path) 
     while (!feof(base_file)) {
         byte_count_base_file++;
         character = fgetc(base_file);
-        struct char_node *node = getCharNodeByCharacter(huffman_data->char_list, character);
+        if (character == -1) {
+            break;
+        }
+        struct char_elem *node = getCharNodeByCharacter(huffman_data->char_list, character);
 
 // #ifdef PRINT_MODE
 //        printf("%c: ", node->character);
@@ -192,7 +192,7 @@ void freeHuffman(struct huffman_data *huffman_data) {
     freeCharList(huffman_data->char_list);
     // freeTree(huffman_data->root);
     // free(huffman_data->no_char_node_list);
-    // free(huffman_data->tree_node_list->node_list);
+    // free(huffman_data->tree_node_list->char_elem_p);
     free(huffman_data->tree_node_list);
     free(huffman_data);
 }
