@@ -9,6 +9,7 @@
 
 struct tree_node_list {
     struct tree_node *node_list;
+    int last_index;
     int size;
 };
 
