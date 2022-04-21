@@ -16,28 +16,31 @@ struct char_list *generateOccurrences(char *path) {
     fp = fopen(path, "r");
 
     int character;
-    int index = 0;
     struct char_list *res = malloc(sizeof(struct char_list));
 
-    // Allocate an array of char_node with a size of 255
-    res->node_list = malloc(255 * sizeof(struct char_node));
+    // Allocate an array of char_elem with a size of 255
+    res->char_elem_p = malloc(255 * sizeof(struct char_elem));
+    res->last_index = -1;
     res->size = 255;
 
     while (!feof(fp)) {
         character = fgetc(fp);
-        struct char_node *node = getCharNodeByCharacter(res, character);
+        if (character == -1) {
+            break;
+        }
 
-        if (node == NULL) {
-            // Create node if character has no node
-            res->node_list[index].character = character;
-            res->node_list[index].occurrences = 1;
-            res->node_list[index].code = NULL;
+        struct char_elem *current_char = getCharNodeByCharacter(res, character);
 
-            res->last_index = index;
-            ++index;
+        // if the current character isn't in the list
+        if (current_char == NULL) {
+            // create a new char_elem and adds it to the list
+            res->last_index++;
+            res->char_elem_p[res->last_index].character = character;
+            res->char_elem_p[res->last_index].occurrences = 1;
+            res->char_elem_p[res->last_index].code = NULL;
         } else {
-            // Increment character occurrences if character already have a node
-            node->occurrences++;
+            // Increment character occurrences if character already have a current_char
+            current_char->occurrences++;
         }
     }
 
@@ -45,19 +48,18 @@ struct char_list *generateOccurrences(char *path) {
     return res;
 }
 
-struct char_node *getCharNodeByCharacter(struct char_list *char_list, int character) {
+struct char_elem *getCharNodeByCharacter(struct char_list *char_list, int character) {
     /*
-     * Returns the char_node corresponding to a given character in a list
+     * Returns the char_elem corresponding to a given character in a list
      * Returns NULL if the character hasn't been found
      */
-    struct char_node *current_node;
+    struct char_elem *current_char;
 
-    // last index + 1 because the index get updated after in generateOccurrences
-    for (int i = 0; i < char_list->last_index + 1; ++i) {
-
-        current_node = &char_list->node_list[i];
-        if (current_node->character == character) {
-            return current_node;
+    for (int i = 0; i <= char_list->last_index; ++i) {
+        current_char = &char_list->char_elem_p[i];
+        // if the curent char is equal to the given char
+        if (current_char->character == character) {
+            return current_char;
         }
     }
 
@@ -70,8 +72,8 @@ void printOccurrenceList(struct char_list *char_list) {
      */
     printf("Character | Character ASCII code | occurrences in the text");
 
-    for (int i = 0; i < char_list->last_index; ++i) {
-        struct char_node *current = &char_list->node_list[i];
+    for (int i = 0; i <= char_list->last_index; ++i) {
+        struct char_elem *current = &char_list->char_elem_p[i];
 
         if (i == 0) {
             if (current->code != NULL) {
@@ -99,28 +101,70 @@ void printOccurrenceList(struct char_list *char_list) {
     }
 }
 
-void sortCharList(struct char_list *char_list) {
-    sortCharListByOcc(char_list);
-    sortCharListByASCIICode(char_list);
-}
-
-void sortCharListByOcc(struct char_list *char_list) {
+void sortCharListByOcc(struct char_list *char_list, bool asc) {
     /*
-     * Simple implementation of bubble sort
+     * Sorts the char list by occurrences
+     * Simple implementation of the bubble sort
      */
     bool has_changed = true;
-    struct char_node *node_list = char_list->node_list;
+    struct char_elem *char_elem_p = char_list->char_elem_p;
 
     // While at least one change was made through an iteration of the list
     while (has_changed) {
         has_changed = false;
 
         // iterate the list
-        for (int i = 0; i < char_list->last_index - 1; ++i) {
+        for (int i = 0; i < char_list->last_index; ++i) {
 
-            // if i < i + 1, swap two values
-            if (node_list[i].occurrences < node_list[i + 1].occurrences) {
-                struct char_node tmp = node_list[i];
+            bool condition;
+            // if asc, sort by ascending values
+            if (asc) {
+                condition = char_elem_p[i].occurrences > char_elem_p[i + 1].occurrences;
+            }
+                // else, sort by descending values
+            else {
+                condition = char_elem_p[i].occurrences < char_elem_p[i + 1].occurrences;
+            }
+            if (condition) {
+                // swap i and i + 1
+                struct char_elem tmp = char_elem_p[i];
+                char_elem_p[i] = char_elem_p[i + 1];
+                char_elem_p[i + 1] = tmp;
+                has_changed = true;
+            }
+        }
+    }
+}
+
+void sortCharListByASCIICode(struct char_list *char_list, bool asc) {
+    /*
+     * Sorts the char list by ASCII code without changing the frequency order
+     * Simple implementation of bubble sort
+     */
+    bool has_changed = true;
+    struct char_elem *node_list = char_list->char_elem_p;
+
+    // While at least one change was made through an iteration of the list
+    while (has_changed) {
+        has_changed = false;
+
+        // iterate the list
+        for (int i = 0; i < char_list->last_index; ++i) {
+
+            bool condition;
+            // if asc, sort by ascending values
+            if (asc) {
+                condition = node_list[i].character > node_list[i + 1].character &&
+                            node_list[i].occurrences == node_list[i + 1].occurrences;
+            }
+                // else, sort by descending values
+            else {
+                condition = node_list[i].character < node_list[i + 1].character &&
+                            node_list[i].occurrences == node_list[i + 1].occurrences;
+            }
+            if (condition) {
+                // swap i and i + 1
+                struct char_elem tmp = node_list[i];
                 node_list[i] = node_list[i + 1];
                 node_list[i + 1] = tmp;
                 has_changed = true;
@@ -129,40 +173,12 @@ void sortCharListByOcc(struct char_list *char_list) {
     }
 }
 
-
-void sortCharListByASCIICode(struct char_list *char_list) {
-    /*
-     * Simple implementation of bubble sort
-     */
-    bool has_changed = true;
-    struct char_node *node_list = char_list->node_list;
-
-    // While at least one change was made through an iteration of the list
-    while (has_changed) {
-        has_changed = false;
-
-        // iterate the list
-        for (int i = 0; i < char_list->last_index - 1; ++i) {
-
-            // if char > char + 1 and occ == occ + 1, swap two values
-            if (node_list[i].character > node_list[i + 1].character &&
-                node_list[i].occurrences == node_list[i + 1].occurrences) {
-
-                struct char_node tmp = node_list[i];
-                node_list[i] = node_list[i + 1];
-                node_list[i + 1] = tmp;
-                has_changed = true;
-            }
-        }
-    }
-}
-
-void freeCharNode(struct char_node *char_node) {
-    free(char_node->code);
-    free(char_node);
+void freeCharElems(struct char_elem *char_elem_p) {
+    free(char_elem_p->code);
+    free(char_elem_p);
 }
 
 void freeCharList(struct char_list *char_list) {
-    freeCharNode(char_list->node_list);
+    freeCharElems(char_list->char_elem_p);
     free(char_list);
 }
