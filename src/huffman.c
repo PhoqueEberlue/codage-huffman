@@ -89,7 +89,7 @@ void generateFreqFile(struct huffman_data *huffman_data, char *file_path) {
     FILE *res_file = fopen(file_path, "w");
     fprintf(res_file, "%i", huffman_data->root->occurrences);
 
-    for (int i = 0; i < huffman_data->char_list->last_index; ++i) {
+    for (int i = 0; i <= huffman_data->char_list->last_index; ++i) {
         fwrite("\n", 1, 1, res_file);
         fwrite(&huffman_data->char_list->node_list[i].character, 1, 1, res_file);
         fwrite(" ", 1, 1, res_file);
