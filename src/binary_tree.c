@@ -29,9 +29,9 @@ struct tree_node_list *createLeaves(struct char_list *char_list) {
     return tree_list;
 }
 
-void removeTwoNodes(struct tree_node_list *tree_node_list, int index) {
+void removeTwoNodes(struct tree_node_list *tree_node_list) {
     // i <= last_index -2 because we access i + 2
-    for (int i = index; i <= tree_node_list->last_index - 2; i++) {
+    for (int i = 0; i <= tree_node_list->last_index - 2; i++) {
         tree_node_list->node_list[i] = tree_node_list->node_list[i + 2];
     }
     tree_node_list->last_index = tree_node_list->last_index - 2;
@@ -100,7 +100,7 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
         node_list_processed[processed_node_count] = node_list[0];
         node_list_processed[processed_node_count + 1] = node_list[1];
 
-        removeTwoNodes(tree_node_list, 0);
+        removeTwoNodes(tree_node_list);
 
         struct tree_node *new_node = malloc(sizeof(struct tree_node));
 
