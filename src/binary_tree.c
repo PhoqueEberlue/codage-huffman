@@ -116,8 +116,8 @@ struct tree_node *createTree(struct tree_node_list *tree_node_list) {
     node_list_processed[processed_node_count] = node_list[0];
 
 #ifdef PRINT_MODE
-    printf(" %i|\n", node_list[0].occurrences);
-    printf("\n");
+    printf("\033[0;31m %i|\n", node_list[0].occurrences);
+    printf("\033[0;37m\n");
 #endif
 
     return &node_list[0];
@@ -201,7 +201,7 @@ float getMeanCodeSize(struct char_list *char_list) {
     for (int i = 0; i < char_list->last_index; ++i) {
         sum_code_sizes += char_list->char_elem_p[i].code_size;
     }
-    return sum_code_sizes / char_list->last_index;
+    return (float)sum_code_sizes / (float)char_list->last_index;
 }
 
 void freeTree(struct tree_node *root) {
