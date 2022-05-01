@@ -147,8 +147,6 @@ void printTree2(struct tree_node *root, int space) {
     printTree2(root->left, space);
 }
 
-
-//TODO: change bool is_leaf to a condition is current node code == -1
 void getDepth(int *res, struct tree_node *root, int depth) {
     /*
      * update the value `res` to get the maximum depth of the tree
@@ -201,7 +199,7 @@ float getMeanCodeSize(struct char_list *char_list) {
     for (int i = 0; i < char_list->last_index; ++i) {
         sum_code_sizes += char_list->char_elem_p[i].code_size;
     }
-    return (float)sum_code_sizes / (float)char_list->last_index;
+    return (float) sum_code_sizes / (float) char_list->last_index;
 }
 
 void freeTree(struct tree_node *root) {
